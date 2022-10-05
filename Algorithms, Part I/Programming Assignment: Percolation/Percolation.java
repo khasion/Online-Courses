@@ -33,11 +33,11 @@ public class Percolation {
         }
 
         bot = c;
-        top = c+1;
+        top = 0;
         for (i = 1; i < dim+1; i++)
         {
-            quf.union(top, i);
-            quf.union(bot, c-i);
+            quf.union(top, convert2dto1d(1, i));
+            quf.union(bot, convert2dto1d(n, i));
         }
     }
 
@@ -58,10 +58,10 @@ public class Percolation {
         if (!isOpen(row, col))
         {
             grid[row][col] = true;
-            quf.union(curr, up);
-            quf.union(curr, down);
-            quf.union(curr, right);
-            quf.union(curr, left);
+            if (row-1 >= 1 && isOpen(row-1, col)) { quf.union(curr, up); }
+            if (row+1 <= dim && isOpen(row+1, col)) { quf.union(curr, down); }
+            if (col-1 >= 1  && isOpen(row, col-1)) { quf.union(curr, left); }
+            if (col+1 <= dim  && isOpen(row, col+1)) { quf.union(curr, right); }
             opensites++;
         }
     }
@@ -85,7 +85,7 @@ public class Percolation {
             throw new IllegalArgumentException();
         }
 
-        return (quf.find(convert2dto1d(row, col)) == quf.find(top) && isOpen(row, col));
+        return (isOpen(row, col) && quf.find(convert2dto1d(row, col)) == quf.find(top));
     }
     
     // returns the number of open sites
@@ -102,6 +102,11 @@ public class Percolation {
 
     private int convert2dto1d(int row, int col)
     {
+        if (row < 1 || row > dim || col < 1 || col > dim)
+        {
+            return 0;
+        }
+
         int pos = dim*(row - 1) + col - 1;
         return pos;
     }
